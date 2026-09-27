@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Authors>AeonCoreX-Lab</Authors>
+    <Version>0.1.0</Version>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      Warnings are NOT errors by default: this code base was written without access to a compiler,
+      so a stray warning must not block the very first build. CI enforces strictness instead
+      (dotnet build -p:StrictWarnings=true). Fix warnings, then flip this default to true.
+    -->
+    <StrictWarnings Condition="'$(StrictWarnings)' == ''">false</StrictWarnings>
+    <TreatWarningsAsErrors>$(StrictWarnings)</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

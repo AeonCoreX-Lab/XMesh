@@ -1,0 +1,66 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet restore
+      - run: dotnet build -c Release --no-restore
+      - name: strict warnings (informational until the codebase is warning-clean)
+        if: matrix.os == 'ubuntu-latest'
+        continue-on-error: true
+        run: dotnet build -c Release --no-restore --no-incremental -p:StrictWarnings=true
+      - run: dotnet run -c Release --no-build --project tests/XMesh.Tests
+
+  publish-cli:
+    needs: build-test
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Standard glibc Linux (servers, desktops, Raspberry Pi 64-bit). NOT for Android/Termux.
+          - { rid: linux-x64,   os: ubuntu-latest }
+          - { rid: linux-arm64, os: ubuntu-latest }
+          - { rid: win-x64,     os: windows-latest }
+          - { rid: osx-arm64,   os: macos-latest }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet publish src/XMesh.Cli -c Release -r ${{ matrix.rid }} --self-contained -p:PublishSingleFile=true -o out/${{ matrix.rid }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xma-${{ matrix.rid }}
+          path: out/${{ matrix.rid }}
+
+  # Portable, framework-dependent build: ONE artifact that runs anywhere a compatible `dotnet` exists
+  # (including Termux, if you install a Bionic-native dotnet there). No RID, no runtime pack.
+  publish-portable:
+    needs: build-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet publish src/XMesh.Cli -c Release -p:UseAppHost=false -o out/xma-portable
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xma-portable
+          path: out/xma-portable

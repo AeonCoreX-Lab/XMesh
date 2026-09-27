@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\XMesh.Core\XMesh.Core.csproj" />
+    <ProjectReference Include="..\XMesh.Assets\XMesh.Assets.csproj" />
+    <ProjectReference Include="..\XMesh.Protocol\XMesh.Protocol.csproj" />
+    <ProjectReference Include="..\XMesh.Security\XMesh.Security.csproj" />
+    <ProjectReference Include="..\XMesh.Cache\XMesh.Cache.csproj" />
+  </ItemGroup>
+</Project>

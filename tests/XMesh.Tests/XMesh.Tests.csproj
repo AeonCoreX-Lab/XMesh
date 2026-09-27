@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <StartupObject>XMesh.Tests.TestRunner</StartupObject>
+    <!-- The tests deliberately expose a tiny xunit-compatible API surface in namespace Xunit. -->
+    <RootNamespace>XMesh.Tests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\XMesh.Runtime\XMesh.Runtime.csproj" />
+  </ItemGroup>
+</Project>
